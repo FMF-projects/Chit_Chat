@@ -109,6 +109,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		if (e.getSource() == this.prijava_gumb) {
 				try {
 					Http.prijava(user.getText());
+					ChitChat.robot.activate();
+					ChitChat.robot.run();
 					input.setEnabled(true);
 					user.setEnabled(false);
 				} catch (Exception e1) {
@@ -116,13 +118,22 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 				}
 		}
 		if (e.getSource() == this.odjava_gumb) {
-			try {
-				input.setEnabled(false);
-				Http.odjava(user.getText());
+	
 				user.setEnabled(true);
-			} catch (Exception e1) {
-				System.out.println("Vpiši vzdevek.");
-			}
+				input.setEnabled(false);
+				ChitChat.robot.deactivate();
+				try {
+					Http.odjava(user.getText());
+				} catch (ClientProtocolException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 		}
 	}
 

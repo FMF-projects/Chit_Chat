@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -8,7 +9,7 @@ import org.apache.http.client.ClientProtocolException;
 public class MessageRobot extends TimerTask {
 	private ChatFrame chat;
 	private Timer timer;
-	private String user = ChatFrame.user.getText();
+	private String uporabnik = ChatFrame.user.getText();
 	
 	
 	public MessageRobot(ChatFrame chat) {
@@ -31,7 +32,11 @@ public class MessageRobot extends TimerTask {
 	@Override
 	public void run() {
 		try {
-			String sporocilo = Sporocilo.ListToString(Http.prejmi_sporocilo(user));
+			List<Sporocilo> sporocila = Http.prejmi_sporocilo(uporabnik);
+			
+			for (Sporocilo sporocilo : sporocila) {
+				chat.addMessage(sporocilo.getSender(), sporocilo.getText());	
+			}
 			
 			
 		} catch (ClientProtocolException e) {
