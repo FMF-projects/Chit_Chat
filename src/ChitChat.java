@@ -1,7 +1,9 @@
 public class ChitChat {
 
+	public static ChatFrame chatFrame = new ChatFrame();
+	static MessageRobot robot = new MessageRobot(chatFrame);
+	
 	public static void main(String[] args) {
-		ChatFrame chatFrame = new ChatFrame();
 		chatFrame.pack();
 		chatFrame.setVisible(true);
 	}

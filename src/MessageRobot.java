@@ -11,7 +11,7 @@ public class MessageRobot extends TimerTask {
 	private String user = ChatFrame.user.getText();
 	
 	
-	public MessageRobot(ChatFrame chat, Uporabnik user) {
+	public MessageRobot(ChatFrame chat) {
 		this.chat = chat;
 	}
 	
@@ -31,7 +31,9 @@ public class MessageRobot extends TimerTask {
 	@Override
 	public void run() {
 		try {
-			String sporocilo = Http.prejmi_sporocilo(user);
+			String sporocilo = Sporocilo.ListToString(Http.prejmi_sporocilo(user));
+			
+			
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

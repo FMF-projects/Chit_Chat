@@ -1,26 +1,38 @@
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+
 public class Http {
 
 	public static void main(String[] args) throws ClientProtocolException, URISyntaxException, IOException {
 	}
 	
-	public static String uporabniki() throws ClientProtocolException, IOException {
-    	String prijavljeni = Request.Get("http://chitchat.andrej.com/users")
+	// SEZNAM UPORABNIKOV
+	public static List<Uporabnik> uporabniki() throws ClientProtocolException, IOException {
+    	String responseBody = Request.Get("http://chitchat.andrej.com/users")
                 			  .execute()
                               .returnContent().asString();
-    	return prijavljeni;
+    	
+    	ObjectMapper mapper = new ObjectMapper();
+		mapper.setDateFormat(new ISO8601DateFormat());
+		
+		TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() { };
+		//System.out.print(Uporabnik.ListToString(mapper.readValue(responseBody, t)));
+		return mapper.readValue(responseBody, t);
 	}
 	
-	
-	public static String prijava(String ime) throws URISyntaxException, ClientProtocolException, IOException {
+	// PRIJAVA
+	public static void prijava(String ime) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/users")
 					.addParameter("username", ime)
 					.build();
@@ -29,11 +41,11 @@ public class Http {
 									 .execute()
 									 .returnContent()
 									 .asString();
-		return responseBody;	
+		System.out.println(responseBody);	
 	}
 	
-	
-	public static String odjava(String ime) throws URISyntaxException, ClientProtocolException, IOException {
+	// ODJAVA
+	public static void odjava(String ime) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/users")
 					.addParameter("username", ime)
 					.build();
@@ -42,10 +54,11 @@ public class Http {
 									 .execute()
 									 .returnContent()
 									 .asString();
-		return responseBody;		
+		System.out.println(responseBody);		
 	}
 	
-	public static String prejmi_sporocilo(String ime) throws URISyntaxException, ClientProtocolException, IOException {
+	// PREJMI SPOROCILO
+	public static List<Sporocilo> prejmi_sporocilo(String ime) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 					.addParameter("username", ime)
 					.build();
@@ -54,21 +67,34 @@ public class Http {
 									.execute()
 									.returnContent()
 									.asString();
-		return responseBody;
+		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setDateFormat(new ISO8601DateFormat());
+		
+		TypeReference<List<Sporocilo>> t = new TypeReference<List<Sporocilo>>() { };
+		//System.out.print(Sporocilo.ListToString(mapper.readValue(responseBody, t)));
+		return mapper.readValue(responseBody, t);
 	}
 	
-	
-	public static String poslji_sporocilo(String ime, String sporocilo) throws URISyntaxException, ClientProtocolException, IOException {
+	// POSLJI SPOROCILO
+	public static void poslji_sporocilo(String ime, String sporocilo) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 						.addParameter("username", ime)
 						.build();
 		
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setDateFormat(new ISO8601DateFormat());
+		
+		//String sporocilo_str = mapper.writeValueAsString(sporocilo);
+		
+		String sporocilo_str = "{ \"global\" : " + true + "," + " \"text\" : \"" + sporocilo + "\"  }";
+		
 		String responseBody = Request.Post(uri)
-									.bodyString(sporocilo, ContentType.APPLICATION_JSON)
+									.bodyString(sporocilo_str , ContentType.APPLICATION_JSON)
 									.execute()
 									.returnContent()
 									.asString();
-		return responseBody;
+		System.out.println(responseBody);
 	}
 	
 }

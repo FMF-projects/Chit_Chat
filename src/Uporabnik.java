@@ -1,4 +1,5 @@
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -17,6 +18,15 @@ public class Uporabnik {
 	public String toString() {
 		return "Uporabnik [username=" + username + ", lastActive=" + lastActive + "]";
 	}
+	
+	public static String ListToString(List<Uporabnik> seznam) {
+		String uporabniki = "[ ";
+		for (Uporabnik uporabnik : seznam) {
+			uporabniki += uporabnik.toString() + ", ";
+		}
+		uporabniki += " ]";
+		return uporabniki;
+	}
 
 	@JsonProperty("username")
 	public String getUsername() {
@@ -34,5 +44,8 @@ public class Uporabnik {
 
 	public void setLastActive(Date lastActive) {
 		this.lastActive = lastActive;
-	}	
+	}
+	
 }
+
+

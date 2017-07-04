@@ -1,4 +1,5 @@
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -26,7 +27,16 @@ public class Sporocilo {
 				recipient + ", sender=" + sender + ", text=" + 
 				text + ", sent at=" + sent_at + "]";
 	}
-
+	
+	public static String ListToString(List<Sporocilo> seznam) {
+		String sporocila = "[ ";
+		for (Sporocilo sporocilo : seznam) {
+			sporocila += sporocilo.toString() + ", ";
+		}
+		sporocila += " ]";
+		return sporocila;
+	}
+	
 	
 	@JsonProperty("global")
 	public Boolean getGlobal() {
