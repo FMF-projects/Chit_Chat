@@ -9,7 +9,6 @@ import org.apache.http.client.ClientProtocolException;
 public class MessageRobot extends TimerTask {
 	private ChatFrame chat;
 	private Timer timer;
-	private String uporabnik = ChatFrame.user.getText();
 	
 	
 	public MessageRobot(ChatFrame chat) {
@@ -21,7 +20,7 @@ public class MessageRobot extends TimerTask {
 	 * Activate the robot!
 	 */
 	public void activate() {
-		Timer timer = new Timer();
+		timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 1000);
 	}
 	
@@ -31,22 +30,27 @@ public class MessageRobot extends TimerTask {
 	
 	@Override
 	public void run() {
+		System.out.println("zahtevam sporocila");
+		List<Sporocilo> sporocila;
+		
 		try {
-			List<Sporocilo> sporocila = Http.prejmi_sporocilo(uporabnik);
+			String uporabnik = ChatFrame.user.getText();
+			sporocila = Http.prejmi_sporocilo(uporabnik);
+			System.out.println("sporocila:");
+			System.out.println(Sporocilo.ListToString(sporocila));
 			
 			for (Sporocilo sporocilo : sporocila) {
+				System.out.println(sporocilo.toString());
 				chat.addMessage(sporocilo.getSender(), sporocilo.getText());	
-			}
-			
-			
+			}			
 		} catch (ClientProtocolException e) {
-			// TODO Auto-generated catch block
+			System.out.println("napaka1");
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
+			System.out.println("napaka2");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("napaka3");
 			e.printStackTrace();
 		}
 	}

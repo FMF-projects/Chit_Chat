@@ -72,12 +72,13 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		TypeReference<List<Sporocilo>> t = new TypeReference<List<Sporocilo>>() { };
-		System.out.print(Sporocilo.ListToString(mapper.readValue(responseBody, t)));
-		return mapper.readValue(responseBody, t);
+		List<Sporocilo> sporocila = mapper.readValue(responseBody, t);
+		
+		return sporocila;
 	}
 	
 	// POSLJI SPOROCILO
-	public static void poslji_sporocilo(String ime, String sporocilo) throws URISyntaxException, ClientProtocolException, IOException {
+	public static void poslji_sporocilo(String ime, String tekst) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 						.addParameter("username", ime)
 						.build();
@@ -85,9 +86,8 @@ public class Http {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
-		//String sporocilo_str = mapper.writeValueAsString(sporocilo);
-		
-		String sporocilo_str = "{ \"global\" : " + true + "," + " \"text\" : \"" + sporocilo + "\"  }";
+		Sporocilo sporocilo = new Sporocilo(true, tekst);
+		String sporocilo_str = mapper.writeValueAsString(sporocilo);
 		
 		String responseBody = Request.Post(uri)
 									.bodyString(sporocilo_str , ContentType.APPLICATION_JSON)

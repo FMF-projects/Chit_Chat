@@ -11,6 +11,9 @@ public class Sporocilo {
 	private String text;
 	private Date sent_at;
 	
+	private Sporocilo() {}
+	
+	// prejeta sporocila
 	public Sporocilo(Boolean global, String recipient, 
 			String sender, String text, Date sent_at) {
 		this.global = global;
@@ -20,6 +23,18 @@ public class Sporocilo {
 		this.sent_at = sent_at;
 	}
 	
+	// poslana javna sporocila
+	public Sporocilo(Boolean global, String text) {
+		this.global = global;
+		this.text = text;
+	}
+	
+	// poslana zasebna sporocila
+	public Sporocilo(Boolean global, String recipient, String text) {
+		this.global = global;
+		this.recipient = recipient;
+		this.text = text;
+	}
 	
 	@Override
 	public String toString() {
@@ -47,7 +62,6 @@ public class Sporocilo {
 		this.global = vrednost;
 	}
 	
-	
 	@JsonProperty("recipient")
 	public String getRecipient() {
 		return recipient;
@@ -56,7 +70,6 @@ public class Sporocilo {
 	public void setRecipient(String prejemnik) {
 		this.recipient = prejemnik;
 	}
-	
 	
 	@JsonProperty("sender")
 	public String getSender() {
@@ -67,7 +80,6 @@ public class Sporocilo {
 		this.sender = posiljatelj;
 	}
 	
-	
 	@JsonProperty("text")
 	public String getText() {
 		return text;
@@ -76,7 +88,6 @@ public class Sporocilo {
 	public void setText(String sporocilo) {
 		this.text = sporocilo;
 	}
-	
 	
 	@JsonProperty("sent_at")
 	public Date getSentAt() {

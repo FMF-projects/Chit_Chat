@@ -1,4 +1,5 @@
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -37,6 +38,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		pane.setLayout(new GridBagLayout());
 		
 		this.setTitle("ChitChat"); //naslov
+		this.setMinimumSize(new Dimension(500,500));
 		
 		//vrstica za dolocanje vzdevka
 		JPanel nickname = new JPanel();
@@ -106,22 +108,34 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		
 		if (e.getSource() == this.prijava_gumb) {
-				try {
-					Http.prijava(user.getText());
-					ChitChat.robot.activate();
-					ChitChat.robot.run();
-					input.setEnabled(true);
-					user.setEnabled(false);
-				} catch (Exception e1) {
-					System.out.println("Vpiši vzdevek.");
-				}
+					try {
+						Http.prijava(user.getText());
+						ChitChat.robot.activate();
+						ChitChat.robot.run();
+						input.setEnabled(true);
+						user.setEnabled(false);
+						
+					} catch (ClientProtocolException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (URISyntaxException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+
 		}
 		if (e.getSource() == this.odjava_gumb) {
-	
 				user.setEnabled(true);
 				input.setEnabled(false);
+				this.output.setText("");
 				ChitChat.robot.deactivate();
+				ChitChat.robot = new MessageRobot(ChitChat.chatFrame);
+				
 				try {
 					Http.odjava(user.getText());
 				} catch (ClientProtocolException e1) {
@@ -142,7 +156,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			if (e.getKeyChar() == '\n') {
 				try {
 					Http.poslji_sporocilo(user.getText(), this.input.getText());
-					System.out.println("uspesno");
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
