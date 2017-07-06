@@ -27,7 +27,8 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() { };
-		//System.out.print(Uporabnik.ListToString(mapper.readValue(responseBody, t)));
+		System.out.println("uporabniki:");
+		System.out.print(Uporabnik.ListToString(mapper.readValue(responseBody, t)));
 		return mapper.readValue(responseBody, t);
 	}
 	
@@ -59,6 +60,8 @@ public class Http {
 	
 	// PREJMI SPOROCILO
 	public static List<Sporocilo> prejmi_sporocilo(String ime) throws URISyntaxException, ClientProtocolException, IOException {
+		System.out.println("zahtevam sporocila");
+		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 					.addParameter("username", ime)
 					.build();
@@ -72,9 +75,7 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		TypeReference<List<Sporocilo>> t = new TypeReference<List<Sporocilo>>() { };
-		List<Sporocilo> sporocila = mapper.readValue(responseBody, t);
-		
-		return sporocila;
+		return mapper.readValue(responseBody, t);
 	}
 	
 	// POSLJI SPOROCILO

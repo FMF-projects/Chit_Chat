@@ -7,9 +7,10 @@ import java.util.TimerTask;
 import org.apache.http.client.ClientProtocolException;
 
 public class MessageRobot extends TimerTask {
-	private ChatFrame chat;
+	private static ChatFrame chat;
 	private Timer timer;
 	
+	public static Boolean active = false;
 	
 	public MessageRobot(ChatFrame chat) {
 		this.chat = chat;
@@ -22,27 +23,24 @@ public class MessageRobot extends TimerTask {
 	public void activate() {
 		timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 1000);
+		active = true;
 	}
 	
 	public void deactivate() {
 		timer.cancel();
+		active = false;
 	}
 	
 	@Override
 	public void run() {
-		System.out.println("zahtevam sporocila");
 		List<Sporocilo> sporocila;
 		
 		try {
-			String uporabnik = ChatFrame.user.getText();
-			sporocila = Http.prejmi_sporocilo(uporabnik);
-			System.out.println("sporocila:");
-			System.out.println(Sporocilo.ListToString(sporocila));
+			String user = ChatFrame.user;
+
+			sporocila = Http.prejmi_sporocilo(user);
+			izpisi_sporocila(sporocila);
 			
-			for (Sporocilo sporocilo : sporocila) {
-				System.out.println(sporocilo.toString());
-				chat.addMessage(sporocilo.getSender(), sporocilo.getText());	
-			}			
 		} catch (ClientProtocolException e) {
 			System.out.println("napaka1");
 			e.printStackTrace();
@@ -54,4 +52,11 @@ public class MessageRobot extends TimerTask {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void izpisi_sporocila(List<Sporocilo> sporocila) {
+		for (Sporocilo sporocilo : sporocila) {
+			chat.addMessage(sporocilo.getSender(), sporocilo.getText());
+		}
+	}
+	
 }
