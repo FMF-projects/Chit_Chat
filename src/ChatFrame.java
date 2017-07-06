@@ -28,6 +28,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JTextArea output;
 	private JTextField input;
 	
+	private JTextArea uporabniki;
+	
 	private JButton prijava_gumb;
 	private JButton odjava_gumb;
 	public static JTextField user;
@@ -38,7 +40,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		pane.setLayout(new GridBagLayout());
 		
 		this.setTitle("ChitChat"); //naslov
-		this.setMinimumSize(new Dimension(500,500));
+		this.setMinimumSize(new Dimension(600,500));
 		
 		//vrstica za dolocanje vzdevka
 		JPanel nickname = new JPanel();
@@ -47,6 +49,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		nicknameConstraint.gridy = 0;
 		nicknameConstraint.weightx = 1.0;
 		nicknameConstraint.weighty = 0.0;
+		nicknameConstraint.gridwidth = 2;
 		nicknameConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(nickname, nicknameConstraint);
 		nickname.addKeyListener(this);
@@ -73,7 +76,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		odjava_gumb.addActionListener(this);
 		
 		// polje za prikaz pogovara
-		this.output = new JTextArea(20, 40);
+		this.output = new JTextArea(20, 35);
 		this.output.setEditable(false);
 		JScrollPane scrollbar = new JScrollPane(output); //drsnik
 		GridBagConstraints outputConstraint = new GridBagConstraints();
@@ -91,10 +94,24 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		inputConstraint.weightx = 1.0; 
 		inputConstraint.weighty = 0.0; //visina inputa se ne razteguje
 		inputConstraint.fill = GridBagConstraints.BOTH; //zapolnitev prostora
+		inputConstraint.gridwidth = 2;
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
 		
 		input.setEnabled(false);
+		
+		// polje za aktivne uporabnike
+		this.uporabniki = new JTextArea(20,15);
+		this.uporabniki.setEditable(false);
+		JScrollPane scrollbar_uporabniki = new JScrollPane(uporabniki); //drsnik
+		GridBagConstraints uporabnikiConstraint = new GridBagConstraints();
+		uporabnikiConstraint.gridx = 1;
+		uporabnikiConstraint.gridy = 1;
+		uporabnikiConstraint.weightx = 0.0;
+		uporabnikiConstraint.weighty = 1.0;
+		uporabnikiConstraint.fill = GridBagConstraints.VERTICAL;
+		pane.add(scrollbar_uporabniki, uporabnikiConstraint);
+		
 		
 	}
 
