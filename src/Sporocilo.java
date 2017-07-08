@@ -1,3 +1,4 @@
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -96,6 +97,12 @@ public class Sporocilo {
 	
 	public void setSentAt(Date cas_sporocila) {
 		this.sent_at = cas_sporocila;
+	}
+	
+	public static String TimeFromDate(Date sent_at) {
+		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm");
+		String time = date_format.format(sent_at);
+		return time;
 	}
 	
 }

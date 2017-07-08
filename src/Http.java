@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
@@ -13,9 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public class Http {
-
-	public static void main(String[] args) throws ClientProtocolException, URISyntaxException, IOException {
-	}
+	
 	
 	// SEZNAM UPORABNIKOV
 	public static List<Uporabnik> uporabniki() throws ClientProtocolException, IOException {
@@ -27,8 +26,6 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		TypeReference<List<Uporabnik>> t = new TypeReference<List<Uporabnik>>() { };
-		System.out.println("uporabniki:");
-		System.out.print(Uporabnik.ListToString(mapper.readValue(responseBody, t)));
 		return mapper.readValue(responseBody, t);
 	}
 	
@@ -60,7 +57,6 @@ public class Http {
 	
 	// PREJMI SPOROCILO
 	public static List<Sporocilo> prejmi_sporocilo(String ime) throws URISyntaxException, ClientProtocolException, IOException {
-		System.out.println("zahtevam sporocila");
 		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 					.addParameter("username", ime)

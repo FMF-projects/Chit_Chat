@@ -7,17 +7,24 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -33,12 +40,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JTextField input;
 	
 	public JTextArea uporabniki_polje;
+	//public JList<Uporabnik> prijavljeni_uporabniki;
 	
 	private JButton prijava_gumb;
 	private JButton odjava_gumb;
 	public static JTextField user_field;
 	
 	public static String user = System.getProperty("user.name");
+	public static Boolean prijavljen = false;
 	
 
 	public ChatFrame() {
@@ -53,16 +62,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		// zapiranje okna
 		this.addWindowListener(new WindowAdapter() 
 			{
-				@Override
-				public void windowClosing(WindowEvent e) {
-					if (ChitChat.robot_sporocila.active == true) {
-						ChitChat.robot_sporocila.deactivate();
-					}
-					
-					if (ChitChat.robot_uporabniki.active == true) {
-						ChitChat.robot_uporabniki.deactivate();
-					}
-					
+			@Override
+			public void windowClosing(WindowEvent e) {
+				if (prijavljen == true) {
+					ChitChat.robot_sporocila.deactivate();
+					ChitChat.robot_uporabniki.deactivate();
+
+				
 					try {
 						Http.odjava(user);
 						
@@ -77,6 +83,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						e1.printStackTrace();
 					}
 				}
+			}
 		});
 		
 		
@@ -150,17 +157,12 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		uporabnikiConstraint.fill = GridBagConstraints.VERTICAL;
 		pane.add(scrollbar_uporabniki, uporabnikiConstraint);
 		
-		
 	}
 
-	/**
-	 * @param person - the person sending the message
-	 * @param message - the message content
-	 */
 	// dodamo sporocilo v okno s sporocilo
-	public void addMessage(String person, String message) {
+	public void addMessage(String time, String person, String message) {
 		String chat = this.output.getText();
-		this.output.setText(chat + person + ": " + message + "\n");
+		this.output.setText(chat + "[" + time + "] " +  person + ": " + message + "\n");
 	}
 	
 	// dodamo aktivnega uporabnika
@@ -177,6 +179,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						user = user_field.getText();
 						Http.prijava(user);
 						
+						prijavljen = true;
+						
 						ChitChat.robot_sporocila.activate();
 						ChitChat.robot_sporocila.run();
 						
@@ -185,6 +189,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						
 						input.setEnabled(true);
 						user_field.setEnabled(false);
+						
+						//prijavljeni_uporabniki = Http.uporabniki();
+						//prijavljeni_uporabniki.addMouseListener(new MouseAdapter() {
+						//	public void MouseClicked(MouseEvent klik) {
+						//		String selectedItem = prijavljeni_uporabniki.getSelectedValue().getUsername();
+						//		System.out.println(selectedItem);	
+						//	}
+						//});
 						
 					} catch (ClientProtocolException e1) {
 						// TODO Auto-generated catch block
@@ -207,6 +219,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					ChitChat.robot_uporabniki = new UserRobot(ChitChat.chatFrame);
 					
 					Http.odjava(user);
+					
+					prijavljen = false;
 					
 					user_field.setEnabled(true);
 					input.setEnabled(false);
@@ -233,6 +247,10 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			if (e.getKeyChar() == '\n') {
 				try {
 					Http.poslji_sporocilo(user, this.input.getText());
+					this.addMessage(CurrentTime(), user, this.input.getText());
+					this.input.setText("");
+					
+					
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -243,8 +261,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				this.addMessage(user, this.input.getText());
-				this.input.setText("");
+				
 			}
 		}
 	}
@@ -258,16 +275,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	public static String CurrentTime() {
+		Date cas = new Date();
+		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm");
+		String time = date_format.format(cas);
+		return time;
+	}
+	
+
 }
-
-
-//za focus
-// dodamo na konec konstruktorja v chatframu
-// addWindowListener(new WindowAdapter(){
-//		public void windowOpened(WindowEvent e){
-//           input.requestFocuslnWindow();
-//      }
-// });
-
-// public void windowOpened(WindowEvent e){
-//  }

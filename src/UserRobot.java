@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -9,7 +10,7 @@ public class UserRobot extends TimerTask {
 	private static ChatFrame chat;
 	private Timer timer;
 	
-	public static Boolean active = false;
+	public static List<Uporabnik> aktivni_uporabniki = new ArrayList<Uporabnik>();
 	
 	public UserRobot(ChatFrame chat) {
 		this.chat = chat;
@@ -18,12 +19,10 @@ public class UserRobot extends TimerTask {
 	public void activate() {
 		timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 5000);
-		active = true;
 	}
 	
 	public void deactivate() {
 		timer.cancel();
-		active = false;
 	}
 
 	@Override
@@ -45,7 +44,7 @@ public class UserRobot extends TimerTask {
 	
 	public static void izpisi_uporabnike(List<Uporabnik> uporabniki) {
 		chat.uporabniki_polje.setText("");
-		for (Uporabnik uporabnik : uporabniki) {
+		for (Uporabnik uporabnik : uporabniki) {			
 			chat.addUser(uporabnik.getUsername());
 		}
 	}

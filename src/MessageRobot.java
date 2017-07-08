@@ -10,8 +10,6 @@ public class MessageRobot extends TimerTask {
 	private static ChatFrame chat;
 	private Timer timer;
 	
-	public static Boolean active = false;
-	
 	public MessageRobot(ChatFrame chat) {
 		this.chat = chat;
 	}
@@ -23,12 +21,10 @@ public class MessageRobot extends TimerTask {
 	public void activate() {
 		timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 1000);
-		active = true;
 	}
 	
 	public void deactivate() {
 		timer.cancel();
-		active = false;
 	}
 	
 	@Override
@@ -55,7 +51,10 @@ public class MessageRobot extends TimerTask {
 	
 	public static void izpisi_sporocila(List<Sporocilo> sporocila) {
 		for (Sporocilo sporocilo : sporocila) {
-			chat.addMessage(sporocilo.getSender(), sporocilo.getText());
+			String cas = Sporocilo.TimeFromDate(sporocilo.getSentAt());
+			String posiljatelj = sporocilo.getSender();
+			String tekst = sporocilo.getText();
+			chat.addMessage(cas, posiljatelj, tekst);
 		}
 	}
 	
