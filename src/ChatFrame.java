@@ -40,13 +40,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JButton prijava_gumb;
 	private JButton odjava_gumb;
 	
-	public static JTextField user_field;
+	public static JTextField user_field; // polje za vpis vzdevka
 	public static JPanel prijavljeni_uporabniki_plosca;
 	
-	private static List<String> zasebni_pogovori = new ArrayList();
+	// belezimo s katerimi uporabniki imamo odprt zasebni pogovor
+	public static List<String> zasebni_pogovori = new ArrayList();
 	
 	public static String user = System.getProperty("user.name");
-	public static Boolean prijavljen = false;
+	public static Boolean prijavljen = false; // stanje nase prijave
 	
 
 	public ChatFrame() {
@@ -59,13 +60,14 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 	
 		// zapiranje okna
+		// v primeru, da se nismo rocno odjavili, se to zgodi ko zapremo okno
+		// prav tako se prekine delovanje robota
 		this.addWindowListener(new WindowAdapter() 
 			{
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if (prijavljen == true) {
 					ChitChat.robot_sporocila.deactivate();
-					ChitChat.robot_uporabniki.deactivate();
 
 					try {
 						Http.odjava(user);
@@ -92,11 +94,10 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		nicknameConstraint.gridy = 0;
 		nicknameConstraint.weightx = 1.0;
 		nicknameConstraint.weighty = 0.0;
-		nicknameConstraint.gridwidth = 2;
-		nicknameConstraint.fill = GridBagConstraints.BOTH;
+		nicknameConstraint.gridwidth = 2; // razteza se cez 2 stolpca 
+		nicknameConstraint.fill = GridBagConstraints.BOTH; 
 		pane.add(nickname, nicknameConstraint);
 		nickname.addKeyListener(this);
-		
 		nickname.setLayout(new FlowLayout(FlowLayout.LEFT));
 		
 		//besedilo "vzdevek"
@@ -140,14 +141,13 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		inputConstraint.gridwidth = 2;
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
-		
-		input.setEnabled(false);
+		input.setEnabled(false); // urejanje bomo omogocili, ko se bo uporabnik prijavil
 		
 		// polje za aktivne uporabnike
 		this.prijavljeni_uporabniki_plosca = new JPanel();
 		this.prijavljeni_uporabniki_plosca.setMinimumSize(new Dimension(150,400));
 		this.prijavljeni_uporabniki_plosca.setLayout(
-				new BoxLayout(prijavljeni_uporabniki_plosca, BoxLayout.Y_AXIS));
+				new BoxLayout(prijavljeni_uporabniki_plosca, BoxLayout.Y_AXIS)); // vertikalno dodajanje elementov
 		JScrollPane scrollbar_uporabniki = new JScrollPane(prijavljeni_uporabniki_plosca); //drsnik
 		GridBagConstraints uporabnikiConstraint = new GridBagConstraints();
 		uporabnikiConstraint.gridx = 1;
@@ -159,16 +159,28 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 	}
 
-	// dodamo sporocilo v okno s sporocilo
+	/**
+	 * Dodamo sporocilo v okno za izpis sporocil.
+	 * @param time: cas sporocila
+	 * @param person: posiljatelj sporocila
+	 * @param message: sporocilo
+	 */
 	public void addMessage(String time, String person, String message) {
 		String chat = this.output.getText();
 		this.output.setText(chat + "[" + time + "] " +  person + ": " + message + "\n");
 	}
 	
-	// izpisemo prijavljene uporabnike
+	/**
+	 * Na plosco "prijavljeni_uporabniki_plosca" izpise prijavljene
+	 * uporabnike v obliki gumbov, ki ob kliku odprejo okno 
+	 * za zasebni pogovor z uporabnikom
+	 * @param uporabniki: seznam trenutno prijavljenih uporabnikov
+	 */
 	public static void izpisi_uporabnike(List<Uporabnik> uporabniki) {
 		prijavljeni_uporabniki_plosca.removeAll();
 		for (Uporabnik uporabnik : uporabniki) {
+			// za vsakega prijavljenega uporabnika ustvarimo gumb, 
+			// ki nam bo ob kliku odprl novo okno za zasebni pogovor
 			JButton uporabnik_gumb = new JButton(uporabnik.getUsername());
 			prijavljeni_uporabniki_plosca.add(uporabnik_gumb);
 			uporabnik_gumb.addActionListener(new ActionListener() {
@@ -183,11 +195,17 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			}
 		}
 	
+	/**
+	 * Preveri, ce okno za zasebni pogovor z danim uporabnikom
+	 * ze obstaja, sicer ga ustvari
+	 * @param prejemnik: uporabnik s katerim si zelimo zasebnega pogovora
+	 */
 	public static void zasebno_okno(Uporabnik prejemnik) {
 		if (zasebni_pogovori.contains(prejemnik.getUsername())) {
 			
 		} else {
 			prejemnik.CreateChat();
+			zasebni_pogovori.add(prejemnik.getUsername());
 		}		
 	}
 	
@@ -196,18 +214,20 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 		if (e.getSource() == this.prijava_gumb) {
 					try {
-						user = user_field.getText();
+						user = user_field.getText(); // preberemo vzdevek, ki ga je uporabnik vpisal
 						Http.prijava(user);
 						
-						prijavljen = true;
+						prijavljen = true; // spremenimo stanje prijave
 						
+						// aktiviramo robota za sporocila in uporabnike						
 						ChitChat.robot_sporocila.activate();
 						ChitChat.robot_sporocila.run();
 						
-						ChitChat.robot_uporabniki.activate();
-						ChitChat.robot_uporabniki.run();
-						
+						// omogocimo urejanje vrstice za vnos sporocila
 						input.setEnabled(true);
+						
+						// onemogocimo urejanje vrstice z vzdevkom, saj 
+						// smo trenutno z njim prijavljeni v chat
 						user_field.setEnabled(false);
 						
 					} catch (ClientProtocolException e1) {
@@ -224,11 +244,10 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		}
 		if (e.getSource() == this.odjava_gumb) {
 				try {
+					// deaktiviramo robota in ustvarimo novega, saj bi 
+					// morali sicer pred ponovno prijavo na novo zagnati program
 					ChitChat.robot_sporocila.deactivate();
-					ChitChat.robot_sporocila = new MessageRobot(ChitChat.chatFrame);
-					
-					ChitChat.robot_uporabniki.deactivate();
-					ChitChat.robot_uporabniki = new UserRobot(ChitChat.chatFrame);
+					ChitChat.robot_sporocila = new MessageRobot(ChitChat.chatFrame);;
 					
 					Http.odjava(user);
 					
@@ -236,7 +255,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					
 					user_field.setEnabled(true);
 					input.setEnabled(false);
-					this.output.setText("");
+					
+					// izbrisemo sporocila in prijavljene uporabnike
+					this.output.setText("");  
 					prijavljeni_uporabniki_plosca.removeAll();
 					prijavljeni_uporabniki_plosca.revalidate();
 					prijavljeni_uporabniki_plosca.repaint();
@@ -260,9 +281,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
 				try {
-					Http.poslji_sporocilo(user, this.input.getText());
+					Http.poslji_sporocilo(user, false, this.input.getText(), null);
 					this.addMessage(CurrentTime(), user, this.input.getText());
-					this.input.setText("");
+					this.input.setText(""); // ponastavimo vnosno vrstico
 					
 					
 				} catch (ClientProtocolException e1) {

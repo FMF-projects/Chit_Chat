@@ -15,8 +15,11 @@ import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 
 public class Http {
 	
-	
-	// SEZNAM UPORABNIKOV
+	/**
+	 * @return seznam prijavljenih uporabnikov
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public static List<Uporabnik> uporabniki() throws ClientProtocolException, IOException {
     	String responseBody = Request.Get("http://chitchat.andrej.com/users")
                 			  .execute()
@@ -29,7 +32,12 @@ public class Http {
 		return mapper.readValue(responseBody, t);
 	}
 	
-	// PRIJAVA
+	/**
+	 * @param ime: uporabnik, ki ga zelimo prijaviti na streznik
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public static void prijava(String ime) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/users")
 					.addParameter("username", ime)
@@ -41,8 +49,13 @@ public class Http {
 									 .asString();
 		System.out.println(responseBody);	
 	}
-	
-	// ODJAVA
+
+	/**
+	 * @param ime: uporabnik, ki ga zelimo odjaviti s streznika
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public static void odjava(String ime) throws URISyntaxException, ClientProtocolException, IOException {
 		URI uri = new URIBuilder("http://chitchat.andrej.com/users")
 					.addParameter("username", ime)
@@ -55,7 +68,14 @@ public class Http {
 		System.out.println(responseBody);		
 	}
 	
-	// PREJMI SPOROCILO
+	/**
+	 * S streznika pridobi nova sporocila.
+	 * @param ime: uporabnik za katerega zahtevamo sporocila
+	 * @return seznam sporocil
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
 	public static List<Sporocilo> prejmi_sporocilo(String ime) throws URISyntaxException, ClientProtocolException, IOException {
 		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
@@ -74,8 +94,20 @@ public class Http {
 		return mapper.readValue(responseBody, t);
 	}
 	
-	// POSLJI SPOROCILO
-	public static void poslji_sporocilo(String ime, String tekst) throws URISyntaxException, ClientProtocolException, IOException {
+	
+	/**
+	 * Strezniku poslje sporocilo.
+	 * @param ime: posiljatelj sporocila
+	 * @param tekst: sporocilo
+	 * @param zasebno: true, ce je sporocilo zasebno, sicer false
+	 * @param prejemnik: uporabnik, kateremu je sporocilo namenjeno
+	 * @throws URISyntaxException
+	 * @throws ClientProtocolException
+	 * @throws IOException
+	 */
+	public static void poslji_sporocilo(String ime, Boolean zasebno, String prejemnik, String tekst) 
+			throws URISyntaxException, ClientProtocolException, IOException {
+		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
 						.addParameter("username", ime)
 						.build();
@@ -83,7 +115,13 @@ public class Http {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
-		Sporocilo sporocilo = new Sporocilo(true, tekst);
+		Sporocilo sporocilo;
+		if (zasebno == false) {
+			sporocilo = new Sporocilo(true, tekst);
+		} else {
+			sporocilo = new Sporocilo(false, prejemnik, tekst);
+		}
+		
 		String sporocilo_str = mapper.writeValueAsString(sporocilo);
 		
 		String responseBody = Request.Post(uri)

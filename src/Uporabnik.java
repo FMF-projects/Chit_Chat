@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Uporabnik {
 	private static String username;
 	private Date lastActive;
+	
 	public static PrivateChatFrame chat;
 	
 	private Uporabnik() {}

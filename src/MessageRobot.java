@@ -26,6 +26,7 @@ public class MessageRobot extends TimerTask {
 	@Override
 	public void run() {
 		List<Sporocilo> sporocila;
+		List<Uporabnik> prijavljeni_uporabniki;
 		
 		try {
 			String user = ChatFrame.user;
@@ -33,24 +34,37 @@ public class MessageRobot extends TimerTask {
 			sporocila = Http.prejmi_sporocilo(user);
 			izpisi_sporocila(sporocila);
 			
+			prijavljeni_uporabniki = Http.uporabniki();
+			chat.izpisi_uporabnike(prijavljeni_uporabniki);
+			
 		} catch (ClientProtocolException e) {
-			System.out.println("napaka1");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			System.out.println("napaka2");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("napaka3");
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
+	/**
+	 * V okno za sporocila doda podana sporocila.
+	 * @param sporocila: sporocila, ki jih zelimo prikazati v oknu
+	 */
 	public static void izpisi_sporocila(List<Sporocilo> sporocila) {
 		for (Sporocilo sporocilo : sporocila) {
 			String cas = Sporocilo.TimeFromDate(sporocilo.getSentAt());
 			String posiljatelj = sporocilo.getSender();
 			String tekst = sporocilo.getText();
-			chat.addMessage(cas, posiljatelj, tekst);
+			Boolean zasebno = sporocilo.getGlobal();
+			
+			if (zasebno == false) {
+				chat.addMessage(cas, posiljatelj, tekst);
+			} else {
+				
+			}
 		}
 	}
 	

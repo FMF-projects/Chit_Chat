@@ -14,6 +14,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,14 +32,19 @@ import org.apache.http.client.ClientProtocolException;
 public class PrivateChatFrame extends JFrame implements ActionListener, KeyListener {
 
 	private JTextArea output;
-	private JTextField input;	
+	private JTextField input;
+	
+	private String user = ChitChat.chatFrame.user;
+	private String prejemnik;
 
-	public PrivateChatFrame(String naslovnik) {
+	public PrivateChatFrame(String prejemnik) {
 		super();
 		Container pane = this.getContentPane();
 		pane.setLayout(new GridBagLayout());
 		
-		this.setTitle("PrivateChitChat : " + naslovnik); //naslov
+		this.prejemnik = prejemnik;
+		
+		this.setTitle("PrivateChitChat : " + prejemnik); //naslov
 		this.setMinimumSize(new Dimension(400,400));
 		
 		// polje za prikaz pogovora
@@ -62,21 +68,71 @@ public class PrivateChatFrame extends JFrame implements ActionListener, KeyListe
 		inputConstraint.fill = GridBagConstraints.BOTH; //zapolnitev prostora
 		pane.add(input, inputConstraint);
 		input.addKeyListener(this);
+		
+		// zapiranje okna
+		// 
+				this.addWindowListener(new WindowAdapter() 
+					{
+					@Override
+					public void windowClosing(WindowEvent e) {
+						List<String> pogovori_osvezeno = new ArrayList<String>();
+						for (String oseba : ChitChat.chatFrame.zasebni_pogovori) {
+							if (oseba != prejemnik) {
+								pogovori_osvezeno.add(oseba);
+							}
+						}
+						ChitChat.chatFrame.zasebni_pogovori = pogovori_osvezeno;
+					}
+				});
 	}
 	
-	// dodamo sporocilo v okno s sporocilo
+		/**
+		 * Dodamo sporocolo v okno za izpis sporocil.
+		 * @param time: cas sporocila
+		 * @param person: posiljatelj sporocila
+		 * @param message: sporocilo
+		 */
 		public void addMessage(String time, String person, String message) {
 			String chat = this.output.getText();
 			this.output.setText(chat + "[" + time + "] " +  person + ": " + message + "\n");
 		}
 	
+		
+	/**
+	 * @return trenutni cas v formatu HH:mm 
+	 */
 	public static String CurrentTime() {
 		Date cas = new Date();
 		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm");
 		String time = date_format.format(cas);
 		return time;
 	}
-
+	
+	// posljemo zasebno sporocilo
+	public void keyTyped(KeyEvent e) {
+		if (e.getSource() == this.input) {
+			if (e.getKeyChar() == '\n') {
+				try {
+					Http.poslji_sporocilo(user, true, this.input.getText(), prejemnik);
+					this.addMessage(CurrentTime(), user, this.input.getText());
+					this.input.setText(""); // ponastavimo vnosno vrstico
+					
+					
+				} catch (ClientProtocolException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
+			}
+		}
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent arg0) {
 		// TODO Auto-generated method stub
@@ -85,12 +141,6 @@ public class PrivateChatFrame extends JFrame implements ActionListener, KeyListe
 
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -99,6 +99,10 @@ public class Sporocilo {
 		this.sent_at = cas_sporocila;
 	}
 	
+	/**
+	 * @param sent_at: cas sporocila
+	 * @return cas sporocila v obliki ure:minute
+	 */
 	public static String TimeFromDate(Date sent_at) {
 		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm");
 		String time = date_format.format(sent_at);
