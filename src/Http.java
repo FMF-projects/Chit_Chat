@@ -21,7 +21,7 @@ public class Http {
     	String responseBody = Request.Get("http://chitchat.andrej.com/users")
                 			  .execute()
                               .returnContent().asString();
-    	
+
     	ObjectMapper mapper = new ObjectMapper();
 		mapper.setDateFormat(new ISO8601DateFormat());
 		

@@ -9,26 +9,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -48,6 +42,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	
 	public static JTextField user_field;
 	public static JPanel prijavljeni_uporabniki_plosca;
+	
+	private static List<String> zasebni_pogovori = new ArrayList();
 	
 	public static String user = System.getProperty("user.name");
 	public static Boolean prijavljen = false;
@@ -178,7 +174,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			uporabnik_gumb.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					zasebno_okno(uporabnik.getUsername());
+					zasebno_okno(uporabnik);
 				}
 			});
 			uporabnik_gumb.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -187,8 +183,12 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			}
 		}
 	
-	public static void zasebno_okno(String prejemnik) {
-
+	public static void zasebno_okno(Uporabnik prejemnik) {
+		if (zasebni_pogovori.contains(prejemnik.getUsername())) {
+			
+		} else {
+			prejemnik.CreateChat();
+		}		
 	}
 	
 	// prijava in odjava

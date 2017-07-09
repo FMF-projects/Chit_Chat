@@ -14,10 +14,6 @@ public class MessageRobot extends TimerTask {
 		this.chat = chat;
 	}
 	
-
-	/**
-	 * Activate the robot!
-	 */
 	public void activate() {
 		timer = new Timer();
 		timer.scheduleAtFixedRate(this, 5000, 1000);

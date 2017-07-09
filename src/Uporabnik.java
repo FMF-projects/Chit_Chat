@@ -5,8 +5,9 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Uporabnik {
-	private String username;
+	private static String username;
 	private Date lastActive;
+	public static PrivateChatFrame chat;
 	
 	private Uporabnik() {}
 	
@@ -45,6 +46,16 @@ public class Uporabnik {
 
 	public void setLastActive(Date lastActive) {
 		this.lastActive = lastActive;
+	}
+	
+	public static void CreateChat() {
+		chat = new PrivateChatFrame(username);
+		chat.pack();
+		chat.setVisible(true);
+	}
+	
+	public PrivateChatFrame GetChat() {
+		return chat;
 	}
 	
 }
