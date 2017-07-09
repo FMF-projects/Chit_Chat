@@ -1,3 +1,5 @@
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -20,8 +22,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -39,12 +43,11 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	private JTextArea output;
 	private JTextField input;
 	
-	public JTextArea uporabniki_polje;
-	//public JList<Uporabnik> prijavljeni_uporabniki;
-	
 	private JButton prijava_gumb;
 	private JButton odjava_gumb;
+	
 	public static JTextField user_field;
+	public static JPanel prijavljeni_uporabniki_plosca;
 	
 	public static String user = System.getProperty("user.name");
 	public static Boolean prijavljen = false;
@@ -68,7 +71,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					ChitChat.robot_sporocila.deactivate();
 					ChitChat.robot_uporabniki.deactivate();
 
-				
 					try {
 						Http.odjava(user);
 						
@@ -120,7 +122,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		nickname.add(odjava_gumb);
 		odjava_gumb.addActionListener(this);
 		
-		// polje za prikaz pogovara
+		// polje za prikaz pogovora
 		this.output = new JTextArea(20, 35);
 		this.output.setEditable(false);
 		JScrollPane scrollbar = new JScrollPane(output); //drsnik
@@ -146,15 +148,17 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		input.setEnabled(false);
 		
 		// polje za aktivne uporabnike
-		this.uporabniki_polje = new JTextArea(20,15);
-		this.uporabniki_polje.setEditable(false);
-		JScrollPane scrollbar_uporabniki = new JScrollPane(uporabniki_polje); //drsnik
+		this.prijavljeni_uporabniki_plosca = new JPanel();
+		this.prijavljeni_uporabniki_plosca.setMinimumSize(new Dimension(150,400));
+		this.prijavljeni_uporabniki_plosca.setLayout(
+				new BoxLayout(prijavljeni_uporabniki_plosca, BoxLayout.Y_AXIS));
+		JScrollPane scrollbar_uporabniki = new JScrollPane(prijavljeni_uporabniki_plosca); //drsnik
 		GridBagConstraints uporabnikiConstraint = new GridBagConstraints();
 		uporabnikiConstraint.gridx = 1;
 		uporabnikiConstraint.gridy = 1;
-		uporabnikiConstraint.weightx = 0.0;
+		uporabnikiConstraint.weightx = 1.0;
 		uporabnikiConstraint.weighty = 1.0;
-		uporabnikiConstraint.fill = GridBagConstraints.VERTICAL;
+		uporabnikiConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(scrollbar_uporabniki, uporabnikiConstraint);
 		
 	}
@@ -165,10 +169,26 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		this.output.setText(chat + "[" + time + "] " +  person + ": " + message + "\n");
 	}
 	
-	// dodamo aktivnega uporabnika
-	public void addUser(String person) {
-			String users = this.uporabniki_polje.getText();
-			this.uporabniki_polje.setText(users + " " +  person + "\n");
+	// izpisemo prijavljene uporabnike
+	public static void izpisi_uporabnike(List<Uporabnik> uporabniki) {
+		prijavljeni_uporabniki_plosca.removeAll();
+		for (Uporabnik uporabnik : uporabniki) {
+			JButton uporabnik_gumb = new JButton(uporabnik.getUsername());
+			prijavljeni_uporabniki_plosca.add(uporabnik_gumb);
+			uporabnik_gumb.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					zasebno_okno(uporabnik.getUsername());
+				}
+			});
+			uporabnik_gumb.setAlignmentX(Component.CENTER_ALIGNMENT);
+			uporabnik_gumb.setBackground(Color.white);
+			prijavljeni_uporabniki_plosca.revalidate();
+			}
+		}
+	
+	public static void zasebno_okno(String prejemnik) {
+
 	}
 	
 	// prijava in odjava
@@ -189,14 +209,6 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						
 						input.setEnabled(true);
 						user_field.setEnabled(false);
-						
-						//prijavljeni_uporabniki = Http.uporabniki();
-						//prijavljeni_uporabniki.addMouseListener(new MouseAdapter() {
-						//	public void MouseClicked(MouseEvent klik) {
-						//		String selectedItem = prijavljeni_uporabniki.getSelectedValue().getUsername();
-						//		System.out.println(selectedItem);	
-						//	}
-						//});
 						
 					} catch (ClientProtocolException e1) {
 						// TODO Auto-generated catch block
@@ -225,7 +237,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					user_field.setEnabled(true);
 					input.setEnabled(false);
 					this.output.setText("");
-					this.uporabniki_polje.setText("");
+					prijavljeni_uporabniki_plosca.removeAll();
+					prijavljeni_uporabniki_plosca.revalidate();
+					prijavljeni_uporabniki_plosca.repaint();
 					
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block

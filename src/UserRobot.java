@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.JList;
+
 import org.apache.http.client.ClientProtocolException;
 
 public class UserRobot extends TimerTask {
 	private static ChatFrame chat;
 	private Timer timer;
-	
-	public static List<Uporabnik> aktivni_uporabniki = new ArrayList<Uporabnik>();
 	
 	public UserRobot(ChatFrame chat) {
 		this.chat = chat;
@@ -26,12 +26,12 @@ public class UserRobot extends TimerTask {
 	}
 
 	@Override
-	public void run() {
-		List<Uporabnik> uporabniki;
+	public void run() {	
+		List<Uporabnik> prijavljeni_uporabniki;
 		
 		try {
-			uporabniki = Http.uporabniki();
-			izpisi_uporabnike(uporabniki);
+			prijavljeni_uporabniki = Http.uporabniki();
+			chat.izpisi_uporabnike(prijavljeni_uporabniki);
 			
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
@@ -40,13 +40,6 @@ public class UserRobot extends TimerTask {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-	}
-	
-	public static void izpisi_uporabnike(List<Uporabnik> uporabniki) {
-		chat.uporabniki_polje.setText("");
-		for (Uporabnik uporabnik : uporabniki) {			
-			chat.addUser(uporabnik.getUsername());
-		}
 	}
 
 }
