@@ -91,6 +91,7 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		TypeReference<List<Sporocilo>> t = new TypeReference<List<Sporocilo>>() { };
+		System.out.println(Sporocilo.ListToString(mapper.readValue(responseBody, t)));
 		return mapper.readValue(responseBody, t);
 	}
 	

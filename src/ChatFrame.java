@@ -14,10 +14,10 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -43,8 +43,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	public static JTextField user_field; // polje za vpis vzdevka
 	public static JPanel prijavljeni_uporabniki_plosca;
 	
-	// belezimo s katerimi uporabniki imamo odprt zasebni pogovor
-	public static List<String> zasebni_pogovori = new ArrayList();
+	public static Map<String, PrivateChatFrame> zasebni_pogovori = new HashMap<String, PrivateChatFrame>();
 	
 	public static String user = System.getProperty("user.name");
 	public static Boolean prijavljen = false; // stanje nase prijave
@@ -67,7 +66,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				if (prijavljen == true) {
-					ChitChat.robot_sporocila.deactivate();
+					ChitChat.robot.deactivate();
 
 					try {
 						Http.odjava(user);
@@ -178,36 +177,42 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	 */
 	public static void izpisi_uporabnike(List<Uporabnik> uporabniki) {
 		prijavljeni_uporabniki_plosca.removeAll();
+
 		for (Uporabnik uporabnik : uporabniki) {
-			// za vsakega prijavljenega uporabnika ustvarimo gumb, 
-			// ki nam bo ob kliku odprl novo okno za zasebni pogovor
 			JButton uporabnik_gumb = new JButton(uporabnik.getUsername());
 			prijavljeni_uporabniki_plosca.add(uporabnik_gumb);
+			
 			uporabnik_gumb.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					zasebno_okno(uporabnik);
+					zasebno_okno(uporabnik.getUsername());
 				}
 			});
+			
 			uporabnik_gumb.setAlignmentX(Component.CENTER_ALIGNMENT);
 			uporabnik_gumb.setBackground(Color.white);
-			prijavljeni_uporabniki_plosca.revalidate();
-			}
 		}
+		prijavljeni_uporabniki_plosca.revalidate();
+		prijavljeni_uporabniki_plosca.repaint();
+	}
+	
 	
 	/**
 	 * Preveri, ce okno za zasebni pogovor z danim uporabnikom
 	 * ze obstaja, sicer ga ustvari
 	 * @param prejemnik: uporabnik s katerim si zelimo zasebnega pogovora
 	 */
-	public static void zasebno_okno(Uporabnik prejemnik) {
-		if (zasebni_pogovori.contains(prejemnik.getUsername())) {
+	public static void zasebno_okno(String prejemnik) {
+		if (zasebni_pogovori.containsKey(prejemnik)) {
 			
 		} else {
-			prejemnik.CreateChat();
-			zasebni_pogovori.add(prejemnik.getUsername());
+			PrivateChatFrame prejemnik_chat = new PrivateChatFrame(prejemnik); 
+			prejemnik_chat.pack();
+			prejemnik_chat.setVisible(true);
+			zasebni_pogovori.put(prejemnik, prejemnik_chat);
 		}		
 	}
+	
 	
 	// prijava in odjava
 	public void actionPerformed(ActionEvent e) {
@@ -220,8 +225,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						prijavljen = true; // spremenimo stanje prijave
 						
 						// aktiviramo robota za sporocila in uporabnike						
-						ChitChat.robot_sporocila.activate();
-						ChitChat.robot_sporocila.run();
+						ChitChat.robot.activate();
+						ChitChat.robot.run();
 						
 						// omogocimo urejanje vrstice za vnos sporocila
 						input.setEnabled(true);
@@ -246,8 +251,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 				try {
 					// deaktiviramo robota in ustvarimo novega, saj bi 
 					// morali sicer pred ponovno prijavo na novo zagnati program
-					ChitChat.robot_sporocila.deactivate();
-					ChitChat.robot_sporocila = new MessageRobot(ChitChat.chatFrame);;
+					ChitChat.robot.deactivate();
+					ChitChat.robot = new MessageRobot(ChitChat.chatFrame);;
 					
 					Http.odjava(user);
 					
@@ -274,18 +279,16 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 				}
 		}
 	}
-
 	
 	// posiljanje sporocila
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
 				try {
-					Http.poslji_sporocilo(user, false, this.input.getText(), null);
+					Http.poslji_sporocilo(user, false, null, this.input.getText());
 					this.addMessage(CurrentTime(), user, this.input.getText());
 					this.input.setText(""); // ponastavimo vnosno vrstico
-					
-					
+	
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

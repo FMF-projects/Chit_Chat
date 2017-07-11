@@ -75,28 +75,23 @@ public class PrivateChatFrame extends JFrame implements ActionListener, KeyListe
 					{
 					@Override
 					public void windowClosing(WindowEvent e) {
-						List<String> pogovori_osvezeno = new ArrayList<String>();
-						for (String oseba : ChitChat.chatFrame.zasebni_pogovori) {
-							if (oseba != prejemnik) {
-								pogovori_osvezeno.add(oseba);
-							}
-						}
-						ChitChat.chatFrame.zasebni_pogovori = pogovori_osvezeno;
+						// odstranimo uporabnika s seznama zasebnih pogovorov
+						ChitChat.chatFrame.zasebni_pogovori.remove(prejemnik);
 					}
 				});
 	}
 	
-		/**
-		 * Dodamo sporocolo v okno za izpis sporocil.
-		 * @param time: cas sporocila
-		 * @param person: posiljatelj sporocila
-		 * @param message: sporocilo
-		 */
-		public void addMessage(String time, String person, String message) {
-			String chat = this.output.getText();
-			this.output.setText(chat + "[" + time + "] " +  person + ": " + message + "\n");
-		}
 	
+	/**
+	 * Dodamo sporocolo v okno za izpis sporocil.
+	 * @param time: cas sporocila
+	 * @param person: posiljatelj sporocila
+	 * @param message: sporocilo
+	 */
+	public void addMessage(String time, String person, String message) {
+		String chat = this.output.getText();
+		this.output.setText(chat + "[" + time + "] " +  person + ": " + message + "\n");
+	}
 		
 	/**
 	 * @return trenutni cas v formatu HH:mm 
@@ -113,11 +108,10 @@ public class PrivateChatFrame extends JFrame implements ActionListener, KeyListe
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
 				try {
-					Http.poslji_sporocilo(user, true, this.input.getText(), prejemnik);
+					Http.poslji_sporocilo(user, true, prejemnik, this.input.getText());
 					this.addMessage(CurrentTime(), user, this.input.getText());
-					this.input.setText(""); // ponastavimo vnosno vrstico
-					
-					
+					this.input.setText(""); // ponastavimo vnosno vrstico	
+	
 				} catch (ClientProtocolException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -131,6 +125,21 @@ public class PrivateChatFrame extends JFrame implements ActionListener, KeyListe
 				
 			}
 		}
+	}
+	
+	public static Uporabnik StringToUporabnik(List<Uporabnik> uporabniki, String uporabnik_str) {
+		Uporabnik iskan_uporabnik = null;
+		for (Uporabnik uporabnik : uporabniki) {
+			if (uporabnik.getUsername() == uporabnik_str) {
+				iskan_uporabnik = uporabnik;
+			} else {
+				
+			}
+		}	
+		if (iskan_uporabnik == null) {
+			iskan_uporabnik = new Uporabnik(uporabnik_str, new Date());
+		}
+		return iskan_uporabnik;
 	}
 	
 	@Override

@@ -6,7 +6,7 @@ import org.apache.http.client.ClientProtocolException;
 public class ChitChat {
 
 	public static ChatFrame chatFrame = new ChatFrame();
-	public static MessageRobot robot_sporocila = new MessageRobot(chatFrame);
+	public static MessageRobot robot = new MessageRobot(chatFrame);
 	
 	public static void main(String[] args) {
 		chatFrame.pack();
