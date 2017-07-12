@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.ClientProtocolException;
@@ -91,7 +90,6 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		TypeReference<List<Sporocilo>> t = new TypeReference<List<Sporocilo>>() { };
-		System.out.println(Sporocilo.ListToString(mapper.readValue(responseBody, t)));
 		return mapper.readValue(responseBody, t);
 	}
 	
@@ -106,7 +104,7 @@ public class Http {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static void poslji_sporocilo(String ime, Boolean zasebno, String prejemnik, String tekst) 
+	public static void poslji_sporocilo(String ime, Boolean javno, String prejemnik, String tekst) 
 			throws URISyntaxException, ClientProtocolException, IOException {
 		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
@@ -117,7 +115,7 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		Sporocilo sporocilo;
-		if (zasebno == false) {
+		if (javno.equals(true)) {
 			sporocilo = new Sporocilo(true, tekst);
 		} else {
 			sporocilo = new Sporocilo(false, prejemnik, tekst);

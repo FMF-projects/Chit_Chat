@@ -65,7 +65,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 			{
 			@Override
 			public void windowClosing(WindowEvent e) {
-				if (prijavljen == true) {
+				if (prijavljen.equals(true)) {
 					ChitChat.robot.deactivate();
 
 					try {
@@ -125,9 +125,17 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		GridBagConstraints outputConstraint = new GridBagConstraints();
 		outputConstraint.gridx = 0;
 		outputConstraint.gridy = 1;
-		outputConstraint.weightx = outputConstraint.weighty = 1.0;
+		outputConstraint.weightx = 10.0;
+		outputConstraint.weighty = 1.0;
 		outputConstraint.fill = GridBagConstraints.BOTH;
 		pane.add(scrollbar, outputConstraint);
+		
+		String navodila = "Za uporabo klepeta izberite vzdevek in kliknite gumb prijava. \n" + 
+				"Na desni strani se bodo izpisali uporabniki, ki so prijavljeni v klepet. \n" +
+				"Ce se zelite s katerim od njih pogovarjati zasebno, kliknite na njegovo ime \n" + 
+				"in odprlo se bo okno za zasebni pogovor. \n \n" + 
+				"Sporocila, ki jih zelite poslati vpisete v spodnji prostorcek in pritisnete enter.";
+		this.output.setText(navodila);
 		
 		// polje za vnos besedila
 		this.input = new JTextField(40);
@@ -144,7 +152,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 		// polje za aktivne uporabnike
 		this.prijavljeni_uporabniki_plosca = new JPanel();
-		this.prijavljeni_uporabniki_plosca.setMinimumSize(new Dimension(150,400));
+		this.prijavljeni_uporabniki_plosca.setPreferredSize(new Dimension(100,400));
 		this.prijavljeni_uporabniki_plosca.setLayout(
 				new BoxLayout(prijavljeni_uporabniki_plosca, BoxLayout.Y_AXIS)); // vertikalno dodajanje elementov
 		JScrollPane scrollbar_uporabniki = new JScrollPane(prijavljeni_uporabniki_plosca); //drsnik
@@ -157,6 +165,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		pane.add(scrollbar_uporabniki, uporabnikiConstraint);
 		
 	}
+	
 
 	/**
 	 * Dodamo sporocilo v okno za izpis sporocil.
@@ -230,6 +239,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 						
 						// omogocimo urejanje vrstice za vnos sporocila
 						input.setEnabled(true);
+						input.setText("");
+						output.setText("");
 						
 						// onemogocimo urejanje vrstice z vzdevkom, saj 
 						// smo trenutno z njim prijavljeni v chat
@@ -252,7 +263,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 					// deaktiviramo robota in ustvarimo novega, saj bi 
 					// morali sicer pred ponovno prijavo na novo zagnati program
 					ChitChat.robot.deactivate();
-					ChitChat.robot = new MessageRobot(ChitChat.chatFrame);;
+					ChitChat.robot = new MessageRobot(ChitChat.chatFrame);
 					
 					Http.odjava(user);
 					
@@ -284,22 +295,26 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 		if (e.getSource() == this.input) {
 			if (e.getKeyChar() == '\n') {
-				try {
-					Http.poslji_sporocilo(user, false, null, this.input.getText());
-					this.addMessage(CurrentTime(), user, this.input.getText());
-					this.input.setText(""); // ponastavimo vnosno vrstico
-	
-				} catch (ClientProtocolException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (URISyntaxException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
+				if (this.input.getText().equals("")) {
+					
+				} else {
+					
+					try {
+						Http.poslji_sporocilo(user, false, null, this.input.getText());
+						this.addMessage(CurrentTime(), user, this.input.getText());
+						this.input.setText(""); // ponastavimo vnosno vrstico
+			
+					} catch (ClientProtocolException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (URISyntaxException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				}
-				
 			}
 		}
 	}
@@ -314,6 +329,9 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 		
 	}
 	
+	/**
+	 * @return trenutni cas v formatu HH:mm 
+	 */
 	public static String CurrentTime() {
 		Date cas = new Date();
 		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm");
