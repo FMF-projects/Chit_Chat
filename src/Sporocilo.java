@@ -12,6 +12,7 @@ public class Sporocilo {
 	private String text;
 	private Date sent_at;
 	
+	@SuppressWarnings("unused")
 	private Sporocilo() {}
 	
 	// prejeta sporocila

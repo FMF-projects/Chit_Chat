@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -33,20 +32,19 @@ import org.apache.http.client.ClientProtocolException;
 @SuppressWarnings("serial")
 public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	
-	private static final Icon String = null;
 	private JTextArea output;
 	private JTextField input;
 	
 	private JButton prijava_gumb;
 	private JButton odjava_gumb;
 	
-	public static JTextField user_field; // polje za vpis vzdevka
-	public static JPanel prijavljeni_uporabniki_plosca;
+	public JTextField user_field; // polje za vpis vzdevka
+	public JPanel prijavljeni_uporabniki_plosca;
 	
-	public static Map<String, PrivateChatFrame> zasebni_pogovori = new HashMap<String, PrivateChatFrame>();
+	public Map<String, PrivateChatFrame> zasebni_pogovori = new HashMap<String, PrivateChatFrame>();
 	
-	public static String user = System.getProperty("user.name");
-	public static Boolean prijavljen = false; // stanje nase prijave
+	public String user = System.getProperty("user.name");
+	public Boolean prijavljen = false; // stanje nase prijave
 	
 
 	public ChatFrame() {
@@ -184,7 +182,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	 * za zasebni pogovor z uporabnikom
 	 * @param uporabniki: seznam trenutno prijavljenih uporabnikov
 	 */
-	public static void izpisi_uporabnike(List<Uporabnik> uporabniki) {
+	public void izpisi_uporabnike(List<Uporabnik> uporabniki) {
 		prijavljeni_uporabniki_plosca.removeAll();
 
 		for (Uporabnik uporabnik : uporabniki) {
@@ -211,7 +209,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	 * ze obstaja, sicer ga ustvari
 	 * @param prejemnik: uporabnik s katerim si zelimo zasebnega pogovora
 	 */
-	public static void zasebno_okno(String prejemnik) {
+	public void zasebno_okno(String prejemnik) {
 		if (zasebni_pogovori.containsKey(prejemnik)) {
 			
 		} else {
@@ -300,8 +298,8 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 				} else {
 					
 					try {
-						Http.poslji_sporocilo(user, false, null, this.input.getText());
-						this.addMessage(CurrentTime(), user, this.input.getText());
+						Http.poslji_sporocilo(user, true, null, this.input.getText());
+						this.addMessage(currentTime(), user, this.input.getText());
 						this.input.setText(""); // ponastavimo vnosno vrstico
 			
 					} catch (ClientProtocolException e1) {
@@ -332,7 +330,7 @@ public class ChatFrame extends JFrame implements ActionListener, KeyListener {
 	/**
 	 * @return trenutni cas v formatu HH:mm 
 	 */
-	public static String CurrentTime() {
+	public String currentTime() {
 		Date cas = new Date();
 		SimpleDateFormat date_format = new SimpleDateFormat("HH:mm");
 		String time = date_format.format(cas);

@@ -9,11 +9,11 @@ import org.apache.http.client.ClientProtocolException;
 
 public class MessageRobot extends TimerTask {
 	
-	private static ChatFrame chat;
+	private ChatFrame chat;
 	private Timer timer;
 	
-	private static List<Sporocilo> sporocila;
-	private static List<Uporabnik> uporabniki;
+	private List<Sporocilo> sporocila;
+	private List<Uporabnik> uporabniki;
 	
 	
 	public MessageRobot(ChatFrame chat) {
@@ -32,13 +32,13 @@ public class MessageRobot extends TimerTask {
 	@Override
 	public void run() {		
 		try {
-			String user = ChatFrame.user;
+			String user = this.chat.user;
 
 			sporocila = Http.prejmi_sporocilo(user);
 			izpisi_sporocila(sporocila);
 			
 			uporabniki = Http.uporabniki();
-			ChitChat.chatFrame.izpisi_uporabnike(uporabniki);
+			this.chat.izpisi_uporabnike(uporabniki);
 			
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
@@ -56,7 +56,7 @@ public class MessageRobot extends TimerTask {
 	 * V okno za sporocila doda podana sporocila.
 	 * @param sporocila: sporocila, ki jih zelimo prikazati v oknu
 	 */
-	public static void izpisi_sporocila(List<Sporocilo> sporocila) {
+	public void izpisi_sporocila(List<Sporocilo> sporocila) {
 		for (Sporocilo sporocilo : sporocila) {
 			
 			String cas = Sporocilo.TimeFromDate(sporocilo.getSentAt());

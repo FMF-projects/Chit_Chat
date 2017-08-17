@@ -7,6 +7,7 @@ public class Uporabnik {
 	private String username;
 	private Date lastActive;
 	
+	@SuppressWarnings("unused")
 	private Uporabnik() {}
 	
 	public Uporabnik(String username, Date lastActive) {
