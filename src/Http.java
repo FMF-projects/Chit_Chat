@@ -1,4 +1,5 @@
 import java.io.IOException;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -104,7 +105,7 @@ public class Http {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static void poslji_sporocilo(String ime, Boolean javno, String prejemnik, String tekst) 
+	public static void poslji_sporocilo(String ime, boolean javno, String prejemnik, String tekst) 
 			throws URISyntaxException, ClientProtocolException, IOException {
 		
 		URI uri = new URIBuilder("http://chitchat.andrej.com/messages")
@@ -115,7 +116,7 @@ public class Http {
 		mapper.setDateFormat(new ISO8601DateFormat());
 		
 		Sporocilo sporocilo;
-		if (javno.equals(true)) {
+		if (javno) {
 			sporocilo = new Sporocilo(true, tekst);
 		} else {
 			sporocilo = new Sporocilo(false, prejemnik, tekst);

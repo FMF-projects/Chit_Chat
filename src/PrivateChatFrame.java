@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 
 import org.apache.http.client.ClientProtocolException;
 
+@SuppressWarnings("serial")
 public class PrivateChatFrame extends JFrame implements ActionListener, KeyListener {
 
 	private JTextArea output;
@@ -90,7 +91,7 @@ public class PrivateChatFrame extends JFrame implements ActionListener, KeyListe
 				} else {
 					try {
 						Http.poslji_sporocilo(user, false, prejemnik, this.input.getText());
-						this.addMessage(ChitChat.chatFrame.CurrentTime(), user, this.input.getText());
+						this.addMessage(ChitChat.chatFrame.currentTime(), user, this.input.getText());
 						this.input.setText(""); // ponastavimo vnosno vrstico	
 		
 					} catch (ClientProtocolException e1) {
